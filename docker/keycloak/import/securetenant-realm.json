@@ -1,0 +1,255 @@
+{
+  "id": "securetenant",
+  "realm": "securetenant",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "roles": {
+    "realm": [
+      { "name": "PLATFORM_ADMIN", "description": "Global platform administrator" },
+      { "name": "TENANT_ADMIN", "description": "Administrator of a tenant" },
+      { "name": "MANAGER", "description": "Tenant manager" },
+      { "name": "USER", "description": "Standard tenant user" },
+      { "name": "AUDITOR", "description": "Read-only auditor" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "securetenant-api",
+      "name": "SecureTenant API",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "securetenant-api-secret",
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "protocol": "openid-connect",
+      "redirectUris": ["http://localhost:8080/*", "http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:8080", "http://localhost:3000"],
+      "defaultClientScopes": ["web-origins", "acr", "profile", "roles", "email"],
+      "optionalClientScopes": ["address", "phone", "offline_access"],
+      "protocolMappers": [
+        {
+          "name": "audience-securetenant-api",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "securetenant-api",
+            "included.custom.audience": "securetenant-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "tenant_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "tenant_id",
+            "claim.name": "tenant_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "securetenant-public",
+      "name": "SecureTenant Public Demo Client",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "protocol": "openid-connect",
+      "redirectUris": ["*"],
+      "webOrigins": ["*"],
+      "defaultClientScopes": ["web-origins", "acr", "profile", "roles", "email"],
+      "protocolMappers": [
+        {
+          "name": "audience-securetenant-api",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.custom.audience": "securetenant-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "name": "tenant_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "tenant_id",
+            "claim.name": "tenant_id",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "realm-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "platform-admin",
+      "enabled": true,
+      "email": "platform@securetenant.local",
+      "emailVerified": true,
+      "firstName": "Platform",
+      "lastName": "Admin",
+      "credentials": [
+        { "type": "password", "value": "password", "temporary": false }
+      ],
+      "realmRoles": ["PLATFORM_ADMIN"]
+    },
+    {
+      "username": "alice",
+      "enabled": true,
+      "email": "alice@acme.test",
+      "emailVerified": true,
+      "firstName": "Alice",
+      "lastName": "Admin",
+      "attributes": { "tenant_id": ["acme"] },
+      "credentials": [
+        { "type": "password", "value": "password", "temporary": false }
+      ],
+      "realmRoles": ["TENANT_ADMIN"]
+    },
+    {
+      "username": "bob",
+      "enabled": true,
+      "email": "bob@acme.test",
+      "emailVerified": true,
+      "firstName": "Bob",
+      "lastName": "User",
+      "attributes": { "tenant_id": ["acme"] },
+      "credentials": [
+        { "type": "password", "value": "password", "temporary": false }
+      ],
+      "realmRoles": ["USER"]
+    },
+    {
+      "username": "john",
+      "enabled": true,
+      "email": "john@globex.test",
+      "emailVerified": true,
+      "firstName": "John",
+      "lastName": "Admin",
+      "attributes": { "tenant_id": ["globex"] },
+      "credentials": [
+        { "type": "password", "value": "password", "temporary": false }
+      ],
+      "realmRoles": ["TENANT_ADMIN"]
+    },
+    {
+      "username": "mike",
+      "enabled": true,
+      "email": "mike@globex.test",
+      "emailVerified": true,
+      "firstName": "Mike",
+      "lastName": "User",
+      "attributes": { "tenant_id": ["globex"] },
+      "credentials": [
+        { "type": "password", "value": "password", "temporary": false }
+      ],
+      "realmRoles": ["USER"]
+    },
+    {
+      "username": "carol",
+      "enabled": true,
+      "email": "carol@acme.test",
+      "emailVerified": true,
+      "firstName": "Carol",
+      "lastName": "Manager",
+      "attributes": { "tenant_id": ["acme"] },
+      "credentials": [
+        { "type": "password", "value": "password", "temporary": false }
+      ],
+      "realmRoles": ["MANAGER"]
+    },
+    {
+      "username": "dave",
+      "enabled": true,
+      "email": "dave@acme.test",
+      "emailVerified": true,
+      "firstName": "Dave",
+      "lastName": "Auditor",
+      "attributes": { "tenant_id": ["acme"] },
+      "credentials": [
+        { "type": "password", "value": "password", "temporary": false }
+      ],
+      "realmRoles": ["AUDITOR"]
+    },
+    {
+      "username": "nina",
+      "enabled": true,
+      "email": "nina@fincorp.test",
+      "emailVerified": true,
+      "firstName": "Nina",
+      "lastName": "Admin",
+      "attributes": { "tenant_id": ["fincorp"] },
+      "credentials": [
+        { "type": "password", "value": "password", "temporary": false }
+      ],
+      "realmRoles": ["TENANT_ADMIN"]
+    },
+    {
+      "username": "paul",
+      "enabled": true,
+      "email": "paul@fincorp.test",
+      "emailVerified": true,
+      "firstName": "Paul",
+      "lastName": "User",
+      "attributes": { "tenant_id": ["fincorp"] },
+      "credentials": [
+        { "type": "password", "value": "password", "temporary": false }
+      ],
+      "realmRoles": ["USER"]
+    }
+  ]
+}
