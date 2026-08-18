@@ -60,5 +60,6 @@ Platform-level tables (`tenants`) have no discriminator so `ROLE_PLATFORM_ADMIN`
 
 - Structured JSON logs (Spring Boot Logstash format) with `tenantId` (Arconia MDC) and `userId`.
 - Micrometer metrics: `http.server.requests`, `orders_created_total`, `orders_failed_total`, `payments_created_total`, `payments_settled_total`, `payments_failed_total`, `payments_retried_total`, `security_denied_total`, `tenant_requests_total`.
+- Grafana dashboard `securetenant-overview` graphs requests by tenant, security denials, API latency, orders created, and payment created/settled/failed/retried.
 - OpenTelemetry traces via Arconia (`HTTP → security → tenant → service → JDBC`).
 - Prometheus scrapes `/actuator/prometheus`; Grafana loads a provisioned dashboard.

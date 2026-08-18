@@ -8,7 +8,7 @@ FinTech payment domain on top of the multi-tenant order API: wallet reservation,
 CREATED → AUTHORIZED → CAPTURED → SETTLED
     │           │           │
     └───────────┴───────────┴──► FAILED
-CREATED / AUTHORIZED may also go to CANCELLED
+CREATED / AUTHORIZED may also go to CANCELLED (`POST /api/payments/{id}/cancel`)
 ```
 
 Wallet movement on the happy path:
@@ -17,7 +17,9 @@ Wallet movement on the happy path:
 2. **Capture** — `RESERVED → PSP_CLEARING`
 3. **Settle** — `PSP_CLEARING → SETTLEMENT`
 
-A hard decline or exhausted retries **releases** the reserve (`RESERVED → AVAILABLE`).
+A hard decline or exhausted retries **releases** the reserve (`RESERVED → AVAILABLE`). Cancel of `CREATED` / `AUTHORIZED` does the same.
+
+Only **CONFIRMED** orders can be paid. A successful settlement moves the order to `COMPLETED`. One open payment (not `FAILED` / `CANCELLED`) is allowed per order.
 
 ## Simulated PSP
 

@@ -43,6 +43,8 @@ export JAVA_HOME="$HOME/.sdkman/candidates/java/25-tem"
 ./mvnw spring-boot:run
 ```
 
+Prometheus scrapes `api:8080` (Compose API container) and `host.docker.internal:8080` (local `spring-boot:run`). One of the two targets will be down depending on how you start the API.
+
 ## Demo users
 
 All passwords: `password`
@@ -55,6 +57,8 @@ All passwords: `password`
 | `dave`           | acme   | AUDITOR        |
 | `john`           | globex | TENANT_ADMIN   |
 | `mike`           | globex | USER           |
+| `nina`           | fincorp | TENANT_ADMIN   |
+| `paul`           | fincorp | USER           |
 | `platform-admin` | —      | PLATFORM_ADMIN |
 
 Obtain a token (public client, Resource Owner Password Grant for the demo only):
@@ -69,7 +73,7 @@ TOKEN=$(curl -s -X POST http://localhost:8081/realms/securetenant/protocol/openi
 curl -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/orders
 ```
 
-The script `scripts/demo.sh` walks through the mandatory security scenario (own orders, cross-tenant deny, forged `X-Tenant-ID`, audit).
+The script `scripts/demo.sh` walks through the mandatory security scenario (own orders, cross-tenant deny, forged `X-Tenant-ID`, audit, confirm + pay, wallets, reconciliation).
 
 ## Tests
 
