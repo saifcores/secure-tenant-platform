@@ -1,6 +1,7 @@
 package com.example.securetenant.identity.api;
 
 import com.example.securetenant.identity.application.UserQueryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "Users", description = "Read-only Keycloak user projection for the current tenant")
 public class UserController {
 
     private final UserQueryService userQueryService;

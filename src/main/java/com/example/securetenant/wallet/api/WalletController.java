@@ -2,6 +2,7 @@ package com.example.securetenant.wallet.api;
 
 import com.example.securetenant.wallet.application.WalletService;
 import com.example.securetenant.wallet.domain.Wallet;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/wallets")
+@Tag(name = "Wallets", description = "Tenant wallet available and reserved balances")
 public class WalletController {
 
     private final WalletService walletService;
@@ -36,8 +38,7 @@ public class WalletController {
             BigDecimal reservedBalance,
             BigDecimal totalBalance,
             Instant createdAt,
-            Instant updatedAt
-    ) {
+            Instant updatedAt) {
         static WalletResponse from(Wallet wallet) {
             return new WalletResponse(
                     wallet.id(),
@@ -47,8 +48,7 @@ public class WalletController {
                     wallet.reservedBalance(),
                     wallet.totalBalance(),
                     wallet.createdAt(),
-                    wallet.updatedAt()
-            );
+                    wallet.updatedAt());
         }
     }
 }

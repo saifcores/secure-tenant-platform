@@ -47,7 +47,7 @@ spring:
       auto-startup: false
 
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT:9081}
   
 
 management:
@@ -93,6 +93,10 @@ arconia:
           additional-ignore-paths:
             - /api/tenants/**
             - /api/platform/**
+            - /swagger-ui.html
+            - /swagger-ui/**
+            - /v3/api-docs
+            - /v3/api-docs/**
     observations:
       cardinality: low
       key-name: tenant.id
@@ -114,6 +118,9 @@ app:
       allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
     jwt:
       audience: ${OAUTH2_AUDIENCE:securetenant-api}
+  openapi:
+    authorization-url: ${OPENAPI_AUTHORIZATION_URL:http://localhost:8081/realms/securetenant/protocol/openid-connect/auth}
+    token-url: ${OPENAPI_TOKEN_URL:http://localhost:8081/realms/securetenant/protocol/openid-connect/token}
   messaging:
     kafka:
       enabled: ${APP_MESSAGING_KAFKA_ENABLED:false}
@@ -133,3 +140,16 @@ app:
     reconciliation:
       enabled: ${APP_PAYMENTS_RECONCILIATION_ENABLED:true}
       interval: ${APP_PAYMENTS_RECONCILIATION_INTERVAL:60s}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: method
+    persist-authorization: true
+    oauth:
+      client-id: securetenant-public
+      use-pkce-with-authorization-code-grant: true
+  paths-to-match: /api/**

@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -22,53 +23,62 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({ PostgresTestConfiguration.class, TestJwtDecoderConfig.class })
 class AuthorizationIT {
 
-    @Autowired
-    MockMvc mockMvc;
+        @Autowired
+        MockMvc mockMvc;
 
-    @Test
-    void userCannotAccessAdminApi() throws Exception {
-        mockMvc.perform(post("/api/tenants")
-                .contentType("application/json")
-                .content("""
-                        {"identifier":"evil","name":"Evil Corp"}
-                        """)
-                .with(jwt().jwt(jwt -> jwt
-                        .subject("bob")
-                        .claim("tenant_id", "acme")
-                        .claim("roles", java.util.List.of("USER")))
-                        .authorities(new SimpleGrantedAuthority("ROLE_USER"))))
-                .andExpect(status().isForbidden());
-    }
+        @Test
+        void userCannotAccessAdminApi() throws Exception {
+                mockMvc.perform(post("/api/tenants")
+                                .contentType("application/json")
+                                .content("""
+                                                {"identifier":"evil","name":"Evil Corp"}
+                                                """)
+                                .with(jwt().jwt(jwt -> jwt
+                                                .subject("bob")
+                                                .claim("tenant_id", "acme")
+                                                .claim("roles", java.util.List.of("USER")))
+                                                .authorities(new SimpleGrantedAuthority("ROLE_USER"))))
+                                .andExpect(status().isForbidden());
+        }
 
-    @Test
-    void userCannotListTenantUsers() throws Exception {
-        mockMvc.perform(get("/api/users")
-                .with(jwt().jwt(jwt -> jwt
-                        .subject("bob")
-                        .claim("tenant_id", "acme")
-                        .claim("roles", java.util.List.of("USER")))
-                        .authorities(new SimpleGrantedAuthority("ROLE_USER"))))
-                .andExpect(status().isForbidden());
-    }
+        @Test
+        void userCannotListTenantUsers() throws Exception {
+                mockMvc.perform(get("/api/users")
+                                .with(jwt().jwt(jwt -> jwt
+                                                .subject("bob")
+                                                .claim("tenant_id", "acme")
+                                                .claim("roles", java.util.List.of("USER")))
+                                                .authorities(new SimpleGrantedAuthority("ROLE_USER"))))
+                                .andExpect(status().isForbidden());
+        }
 
-    @Test
-    void platformAdminCanListTenants() throws Exception {
-        mockMvc.perform(get("/api/tenants")
-                .with(jwt().jwt(jwt -> jwt
-                        .subject("platform-admin")
-                        .claim("roles", java.util.List.of("PLATFORM_ADMIN")))
-                        .authorities(new SimpleGrantedAuthority("ROLE_PLATFORM_ADMIN"))))
-                .andExpect(status().isOk());
-    }
+        @Test
+        void platformAdminCanListTenants() throws Exception {
+                mockMvc.perform(get("/api/tenants")
+                                .with(jwt().jwt(jwt -> jwt
+                                                .subject("platform-admin")
+                                                .claim("roles", java.util.List.of("PLATFORM_ADMIN")))
+                                                .authorities(new SimpleGrantedAuthority("ROLE_PLATFORM_ADMIN"))))
+                                .andExpect(status().isOk());
+        }
 
-    @Test
-    void unknownTenantIsRejected() throws Exception {
-        mockMvc.perform(get("/api/orders")
-                .with(jwt().jwt(jwt -> jwt
-                        .subject("ghost")
-                        .claim("tenant_id", "unknown")
-                        .claim("roles", java.util.List.of("TENANT_ADMIN")))
-                        .authorities(new SimpleGrantedAuthority("ROLE_TENANT_ADMIN"))))
-                .andExpect(status().is4xxClientError());
-    }
+        @Test
+        void unknownTenantIsRejected() throws Exception {
+                mockMvc.perform(get("/api/orders")
+                                .with(jwt().jwt(jwt -> jwt
+                                                .subject("ghost")
+                                                .claim("tenant_id", "unknown")
+                                                .claim("roles", java.util.List.of("TENANT_ADMIN")))
+                                                .authorities(new SimpleGrantedAuthority("ROLE_TENANT_ADMIN"))))
+                                .andExpect(status().is4xxClientError());
+        }
+
+        @Test
+        void openApiDocsArePublic() throws Exception {
+                mockMvc.perform(get("/v3/api-docs"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.info.title").value("SecureTenant Platform API"))
+                                .andExpect(jsonPath("$.paths['/api/payments']").exists())
+                                .andExpect(jsonPath("$.components.securitySchemes['bearer-jwt']").exists());
+        }
 }

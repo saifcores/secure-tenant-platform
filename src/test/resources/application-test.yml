@@ -28,6 +28,10 @@ arconia:
           additional-ignore-paths:
             - /api/tenants/**
             - /api/platform/**
+            - /swagger-ui.html
+            - /swagger-ui/**
+            - /v3/api-docs
+            - /v3/api-docs/**
 
 logging:
   structured:
@@ -52,3 +56,6 @@ app:
     psp:
       timeout: 2s
       max-attempts: 3
+  openapi:
+    authorization-url: http://localhost:8081/realms/securetenant/protocol/openid-connect/auth
+    token-url: http://localhost:8081/realms/securetenant/protocol/openid-connect/token

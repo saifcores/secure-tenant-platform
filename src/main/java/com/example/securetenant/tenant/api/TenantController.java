@@ -2,6 +2,7 @@ package com.example.securetenant.tenant.api;
 
 import com.example.securetenant.tenant.application.CreateTenantCommand;
 import com.example.securetenant.tenant.application.TenantService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tenants")
 @PreAuthorize("hasRole('PLATFORM_ADMIN')")
+@Tag(name = "Tenants", description = "Platform-admin organisation management")
 public class TenantController {
 
     private final TenantService tenantService;

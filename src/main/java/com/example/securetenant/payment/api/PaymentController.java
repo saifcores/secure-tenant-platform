@@ -5,6 +5,10 @@ import com.example.securetenant.ledger.application.LedgerService;
 import com.example.securetenant.payment.application.CreatePaymentCommand;
 import com.example.securetenant.payment.application.PaymentOrchestrator;
 import com.example.securetenant.payment.application.ReconciliationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,6 +26,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
+@Tag(name = "Payments", description = "Wallet reservation, PSP, settlement")
 public class PaymentController {
 
     private final PaymentOrchestrator paymentOrchestrator;
@@ -33,8 +38,7 @@ public class PaymentController {
             PaymentOrchestrator paymentOrchestrator,
             IdempotentPaymentExecutor idempotentPaymentExecutor,
             LedgerService ledgerService,
-            ReconciliationService reconciliationService
-    ) {
+            ReconciliationService reconciliationService) {
         this.paymentOrchestrator = paymentOrchestrator;
         this.idempotentPaymentExecutor = idempotentPaymentExecutor;
         this.ledgerService = ledgerService;
@@ -56,10 +60,10 @@ public class PaymentController {
     @PostMapping("/payments")
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasAnyRole('TENANT_ADMIN','MANAGER','USER')")
+    @Operation(summary = "Create a payment for a CONFIRMED order")
     public PaymentApi.PaymentResponse create(
-            @RequestHeader("Idempotency-Key") String idempotencyKey,
-            @Valid @RequestBody PaymentApi.CreatePaymentRequest request
-    ) {
+            @Parameter(name = "Idempotency-Key", in = ParameterIn.HEADER, required = true, description = "Unique per tenant. Same key + same orderId replays; different orderId returns 409.") @RequestHeader("Idempotency-Key") String idempotencyKey,
+            @Valid @RequestBody PaymentApi.CreatePaymentRequest request) {
         CreatePaymentCommand command = new CreatePaymentCommand(request.orderId(), idempotencyKey);
         return PaymentApi.PaymentResponse.from(
                 idempotentPaymentExecutor.execute(command, () -> paymentOrchestrator.initiate(command)));
@@ -96,6 +100,7 @@ public class PaymentController {
 
     @GetMapping("/settlements")
     @PreAuthorize("hasAnyRole('TENANT_ADMIN','MANAGER','USER','AUDITOR')")
+    @Operation(tags = { "Settlements" })
     public List<PaymentApi.SettlementResponse> settlements() {
         return paymentOrchestrator.settlements().stream()
                 .map(PaymentApi.SettlementResponse::from)
@@ -104,6 +109,7 @@ public class PaymentController {
 
     @GetMapping("/reconciliation")
     @PreAuthorize("hasAnyRole('TENANT_ADMIN','MANAGER','AUDITOR')")
+    @Operation(tags = { "Reconciliation" })
     public PaymentApi.ReconciliationResponse reconciliation() {
         return PaymentApi.ReconciliationResponse.from(reconciliationService.report());
     }

@@ -46,7 +46,11 @@ public class SecurityConfig {
                                                                 "/actuator/health",
                                                                 "/actuator/health/**",
                                                                 "/actuator/info",
-                                                                "/actuator/prometheus")
+                                                                "/actuator/prometheus",
+                                                                "/swagger-ui.html",
+                                                                "/swagger-ui/**",
+                                                                "/v3/api-docs",
+                                                                "/v3/api-docs/**")
                                                 .permitAll()
                                                 .requestMatchers("/api/tenants/**").hasRole("PLATFORM_ADMIN")
                                                 .requestMatchers("/api/platform/**").hasRole("PLATFORM_ADMIN")

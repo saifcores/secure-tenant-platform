@@ -2,6 +2,7 @@ package com.example.securetenant.order.api;
 
 import com.example.securetenant.order.application.CreateOrderCommand;
 import com.example.securetenant.order.application.OrderService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/orders")
+@Tag(name = "Orders", description = "Tenant-scoped order lifecycle")
 public class OrderController {
 
     private final OrderService orderService;

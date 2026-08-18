@@ -4,6 +4,8 @@ Base URL: `http://localhost:8080`
 
 All `/api/**` routes except actuator health/info/prometheus require `Authorization: Bearer <access_token>`.
 
+Interactive docs: **Swagger UI** at `/swagger-ui.html` (OpenAPI JSON at `/v3/api-docs`). Use **Authorize** with a Bearer token, or Keycloak password grant (`securetenant-public`, username `alice`, password `password`).
+
 Error envelope:
 
 ```json
@@ -17,14 +19,14 @@ Error envelope:
 }
 ```
 
-| Status | `error` | When |
-| ------ | ------- | ---- |
-| 400 | `BAD_REQUEST` | Validation, missing `Idempotency-Key` |
-| 401 | `UNAUTHORIZED` | Missing / expired / invalid JWT |
-| 403 | `FORBIDDEN` | Authenticated but role insufficient |
-| 404 | `NOT_FOUND` | Missing id, or another tenant's row |
-| 409 | `CONFLICT` | Duplicate email, or idempotency key reused with a different `orderId` |
-| 422 | `UNPROCESSABLE_ENTITY` | Illegal state transition, unpaid/unconfirmed order, insufficient wallet |
+| Status | `error`                | When                                                                    |
+| ------ | ---------------------- | ----------------------------------------------------------------------- |
+| 400    | `BAD_REQUEST`          | Validation, missing `Idempotency-Key`                                   |
+| 401    | `UNAUTHORIZED`         | Missing / expired / invalid JWT                                         |
+| 403    | `FORBIDDEN`            | Authenticated but role insufficient                                     |
+| 404    | `NOT_FOUND`            | Missing id, or another tenant's row                                     |
+| 409    | `CONFLICT`             | Duplicate email, or idempotency key reused with a different `orderId`   |
+| 422    | `UNPROCESSABLE_ENTITY` | Illegal state transition, unpaid/unconfirmed order, insufficient wallet |
 
 `/api/platform/**` is reserved for future platform-admin APIs (Arconia ignore + `ROLE_PLATFORM_ADMIN`). There is no controller there yet.
 
@@ -47,10 +49,10 @@ Status body: `{ "status": "SUSPENDED" }` (`ACTIVE` / `SUSPENDED` / `DISABLED`).
 
 Read-only copy of Keycloak users for the current tenant. Passwords are never stored here.
 
-| Method | Path              | Roles                    |
-| ------ | ----------------- | ------------------------ |
-| GET    | `/api/users`      | TENANT_ADMIN, AUDITOR    |
-| GET    | `/api/users/{id}` | same                     |
+| Method | Path              | Roles                 |
+| ------ | ----------------- | --------------------- |
+| GET    | `/api/users`      | TENANT_ADMIN, AUDITOR |
+| GET    | `/api/users/{id}` | same                  |
 
 ## Customers (tenant-scoped)
 
@@ -89,15 +91,15 @@ A settled payment also moves the order to `COMPLETED`. Cancel is rejected if the
 
 `POST /api/payments` requires header `Idempotency-Key`. Only **CONFIRMED** orders can be paid. One open payment per order.
 
-| Method | Path | Roles |
-| ------ | ---- | ----- |
-| GET | `/api/payments` | TENANT_ADMIN, MANAGER, USER, AUDITOR |
-| GET | `/api/payments/{id}` | same |
-| POST | `/api/payments` | TENANT_ADMIN, MANAGER, USER |
-| POST | `/api/payments/{id}/retry` | TENANT_ADMIN, MANAGER |
-| POST | `/api/payments/{id}/cancel` | TENANT_ADMIN, MANAGER |
-| GET | `/api/payments/{id}/transactions` | TENANT_ADMIN, MANAGER, USER, AUDITOR |
-| GET | `/api/payments/{id}/ledger` | same |
+| Method | Path                              | Roles                                |
+| ------ | --------------------------------- | ------------------------------------ |
+| GET    | `/api/payments`                   | TENANT_ADMIN, MANAGER, USER, AUDITOR |
+| GET    | `/api/payments/{id}`              | same                                 |
+| POST   | `/api/payments`                   | TENANT_ADMIN, MANAGER, USER          |
+| POST   | `/api/payments/{id}/retry`        | TENANT_ADMIN, MANAGER                |
+| POST   | `/api/payments/{id}/cancel`       | TENANT_ADMIN, MANAGER                |
+| GET    | `/api/payments/{id}/transactions` | TENANT_ADMIN, MANAGER, USER, AUDITOR |
+| GET    | `/api/payments/{id}/ledger`       | same                                 |
 
 ```json
 { "orderId": "cccccccc-cccc-cccc-cccc-ccccccccccc2" }
@@ -107,11 +109,11 @@ PSP simulation uses the last two digits of the amount in cents: `13` timeout, `9
 
 ## Wallets, settlements, reconciliation
 
-| Method | Path | Roles |
-| ------ | ---- | ----- |
-| GET | `/api/wallets` | TENANT_ADMIN, MANAGER, USER, AUDITOR |
-| GET | `/api/settlements` | same |
-| GET | `/api/reconciliation` | TENANT_ADMIN, MANAGER, AUDITOR |
+| Method | Path                  | Roles                                |
+| ------ | --------------------- | ------------------------------------ |
+| GET    | `/api/wallets`        | TENANT_ADMIN, MANAGER, USER, AUDITOR |
+| GET    | `/api/settlements`    | same                                 |
+| GET    | `/api/reconciliation` | TENANT_ADMIN, MANAGER, AUDITOR       |
 
 ## Stats and audit
 

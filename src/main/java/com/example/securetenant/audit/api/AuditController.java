@@ -2,6 +2,7 @@ package com.example.securetenant.audit.api;
 
 import com.example.securetenant.audit.application.AuditQueryService;
 import com.example.securetenant.audit.domain.AuditEvent;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/audit")
+@Tag(name = "Audit", description = "Sensitive-operation trail. Platform admin sees all tenants.")
 public class AuditController {
 
     private final AuditQueryService auditQueryService;

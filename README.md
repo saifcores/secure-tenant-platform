@@ -26,14 +26,16 @@ Java 25 is required (Arconia 0.30 bytecode). With SDKMAN: `sdk use java 25-tem`.
 docker compose up --build
 ```
 
-| Service                    | URL                                   |
-| -------------------------- | ------------------------------------- |
-| API                        | http://localhost:8080                 |
-| Keycloak                   | http://localhost:8081 (admin / admin) |
-| Kafka (host)               | localhost:19092                       |
-| Prometheus                 | http://localhost:9090                 |
-| Grafana                    | http://localhost:3000 (admin / admin) |
-| Grafana LGTM (traces/logs) | http://localhost:3001                 |
+| Service                    | URL                                                             |
+| -------------------------- | --------------------------------------------------------------- |
+| API                        | http://localhost:8080 (Compose) / http://localhost:9081 (local) |
+| Swagger UI                 | http://localhost:8080/swagger-ui.html (or :9081 locally)        |
+| OpenAPI JSON               | http://localhost:8080/v3/api-docs                               |
+| Keycloak                   | http://localhost:8081 (admin / admin)                           |
+| Kafka (host)               | localhost:19092                                                 |
+| Prometheus                 | http://localhost:9090                                           |
+| Grafana                    | http://localhost:3000 (admin / admin)                           |
+| Grafana LGTM (traces/logs) | http://localhost:3001                                           |
 
 Run only the infrastructure and start the API from Maven:
 
@@ -49,17 +51,17 @@ Prometheus scrapes `api:8080` (Compose API container) and `host.docker.internal:
 
 All passwords: `password`
 
-| User             | Tenant | Role           |
-| ---------------- | ------ | -------------- |
-| `alice`          | acme   | TENANT_ADMIN   |
-| `bob`            | acme   | USER           |
-| `carol`          | acme   | MANAGER        |
-| `dave`           | acme   | AUDITOR        |
-| `john`           | globex | TENANT_ADMIN   |
-| `mike`           | globex | USER           |
+| User             | Tenant  | Role           |
+| ---------------- | ------- | -------------- |
+| `alice`          | acme    | TENANT_ADMIN   |
+| `bob`            | acme    | USER           |
+| `carol`          | acme    | MANAGER        |
+| `dave`           | acme    | AUDITOR        |
+| `john`           | globex  | TENANT_ADMIN   |
+| `mike`           | globex  | USER           |
 | `nina`           | fincorp | TENANT_ADMIN   |
 | `paul`           | fincorp | USER           |
-| `platform-admin` | —      | PLATFORM_ADMIN |
+| `platform-admin` | —       | PLATFORM_ADMIN |
 
 Obtain a token (public client, Resource Owner Password Grant for the demo only):
 
@@ -91,4 +93,5 @@ Docker is required for Testcontainers (PostgreSQL and Keycloak).
 - [MULTI-TENANCY.md](MULTI-TENANCY.md)
 - [PAYMENTS.md](PAYMENTS.md)
 - [API.md](API.md)
+- Swagger UI: `/swagger-ui.html` (Bearer JWT or Keycloak `alice` / `password`)
 - [ADR/](ADR/)

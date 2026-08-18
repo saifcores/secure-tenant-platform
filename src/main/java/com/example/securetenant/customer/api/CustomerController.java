@@ -3,6 +3,7 @@ package com.example.securetenant.customer.api;
 import com.example.securetenant.customer.application.CreateCustomerCommand;
 import com.example.securetenant.customer.application.CustomerService;
 import com.example.securetenant.customer.application.UpdateCustomerCommand;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/customers")
+@Tag(name = "Customers", description = "Tenant-scoped CRM")
 public class CustomerController {
 
     private final CustomerService customerService;
