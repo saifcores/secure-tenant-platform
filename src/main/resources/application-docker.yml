@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/securetenant
+    username: ${DATABASE_USERNAME:securetenant}
+    password: ${DATABASE_PASSWORD:securetenant}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OAUTH2_ISSUER_URI:http://keycloak:8080/realms/securetenant}
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+    listener:
+      auto-startup: true
+
+arconia:
+  otel:
+    exporter:
+      otlp:
+        endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://otel-lgtm:4318}
+
+app:
+  messaging:
+    kafka:
+      enabled: true
+  payments:
+    retry:
+      enabled: true
+    outbox:
+      enabled: true
+    reconciliation:
+      enabled: true

@@ -1,0 +1,54 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9999/realms/securetenant
+          audiences: securetenant-api
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration
+  kafka:
+    listener:
+      auto-startup: false
+
+arconia:
+  otel:
+    enabled: false
+    exporter:
+      type: none
+  multitenancy:
+    resolution:
+      http:
+        resolution-mode: oauth2
+        filter:
+          additional-ignore-paths:
+            - /api/tenants/**
+            - /api/platform/**
+
+logging:
+  structured:
+    format:
+      console: logstash
+  level:
+    com.example.securetenant: INFO
+    org.springframework.security: WARN
+    org.testcontainers: INFO
+
+app:
+  messaging:
+    kafka:
+      enabled: false
+  payments:
+    retry:
+      enabled: false
+    outbox:
+      enabled: false
+    reconciliation:
+      enabled: false
+    psp:
+      timeout: 2s
+      max-attempts: 3

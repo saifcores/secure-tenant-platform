@@ -1,0 +1,10 @@
+target
+.git
+.idea
+.vscode
+*.iml
+.env
+.DS_Store
+src/test
+docs
+ADR
