@@ -5,7 +5,7 @@ SecureTenant is a modular monolith. Packages are split by **bounded context**, t
 ```
 com.example.securetenant
 ├── tenant      organisations on the platform
-├── identity    JWT principal, roles (passwords stay in Keycloak)
+├── identity    JWT principal, roles, read-only `users` projection (passwords stay in Keycloak)
 ├── customer    tenant-scoped CRM
 ├── order       tenant-scoped order lifecycle
 ├── payment     orchestration, PSP, transactions, settlements
